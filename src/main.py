@@ -16,26 +16,6 @@ class RedditPost:
     score: int
 
 
-def get_subreddit_page(subreddit, after=None):
-    base_url = f"https://www.reddit.com/r/{subreddit}/"
-    headers = {
-        "Accept-Language": "en-US,en;q=0.9",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Cookie": "intl_splash=false"
-    }
-
-    url = base_url + ("?after=" + after if after else "")
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        return response.text
-    else:
-        print(f"Error: Unable to fetch page (status code {response.status_code})")
-        return None
-
-
 def parse_reddit_posts(html):
     soup = BeautifulSoup(html, 'html.parser')
     posts: List[RedditPost] = []
