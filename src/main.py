@@ -1,8 +1,3 @@
-# This is a sample Python script.
-from typing import List
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import requests
 from bs4 import BeautifulSoup
 import time
@@ -18,26 +13,6 @@ class RedditPost:
     timestamp: str
     link: str
     score: int
-
-
-def get_subreddit_page(subreddit, after=None):
-    base_url = f"https://www.reddit.com/r/{subreddit}/"
-    headers = {
-        "Accept-Language": "en-US,en;q=0.9",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Cookie": "intl_splash=false"
-    }
-
-    url = base_url + ("?after=" + after if after else "")
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        return response.text
-    else:
-        print(f"Error: Unable to fetch page (status code {response.status_code})")
-        return None
 
 
 def parse_reddit_posts(html):
@@ -74,7 +49,7 @@ def parse_reddit_posts(html):
     return {"posts_data": posts, "cursor": after_cursor}
 
 
-def scrape_subreddit(subreddit_id: str, sort: Union["new", "hot", "old"], max_pages: int = None):
+def scrape_subreddit(subreddit_id: str, sort: Union["new", "hot", "old"], max_posts: int):
     base_url = f"https://www.reddit.com/r/{subreddit_id}/"
     response = requests.get(base_url)
     subreddit_data = {"posts": []}
@@ -85,23 +60,22 @@ def scrape_subreddit(subreddit_id: str, sort: Union["new", "hot", "old"], max_pa
     def make_pagination_url(cursor_id: str):
         return f"https://www.reddit.com/svc/shreddit/community-more-posts/hot/?after={cursor_id}%3D%3D&t=DAY&name=vim&feedLength=3&sort={sort}"
 
-    while cursor and (max_pages is None or max_pages > 0):
+    while cursor and len(subreddit_data["posts"]) < max_posts:
         url = make_pagination_url(cursor)
         response = requests.get(url)
         data = parse_reddit_posts(response.text)
         cursor = data["cursor"]
         post_data = data["posts_data"]
         subreddit_data["posts"].extend(post_data)
-        if max_pages is not None:
-            max_pages -= 1
-        print(f"Scraped {len(post_data)} posts, total: {len(subreddit_data['posts'])}")
+
+    subreddit_data["posts"] = subreddit_data["posts"][:max_posts]
 
     return subreddit_data
 
 
 if __name__ == '__main__':
     subreddit = "vim"
-    posts = scrape_subreddit(subreddit, "hot", 3)
+    posts = scrape_subreddit(subreddit, "hot", 10)
 
     for post in posts["posts"]:
         print(post)
