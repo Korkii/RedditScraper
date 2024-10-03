@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import time
 from dataclasses import dataclass
 from typing import List, Dict, Union
-
+import argparse
 
 @dataclass
 class RedditPost:
@@ -75,7 +75,14 @@ def scrape_subreddit(subreddit_id: str, sort: Union["new", "hot", "old"], max_po
 
 if __name__ == '__main__':
     subreddit = "vim"
-    posts = scrape_subreddit(subreddit, "hot", 10)
+    parser = argparse.ArgumentParser(description='Scrape Reddit posts from a subreddit.')
+    parser.add_argument('subreddit', type=str, help='The subreddit to scrape')
+    parser.add_argument('sort', type=str, choices=['new', 'hot', 'old'], help='The sorting order of posts')
+    parser.add_argument('max_posts', type=int, help='The maximum number of posts to scrape')
+
+    args = parser.parse_args()
+
+    posts = scrape_subreddit(args.subreddit, args.sort, args.max_posts)
 
     for post in posts["posts"]:
         print(post)

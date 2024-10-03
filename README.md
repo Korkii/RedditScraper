@@ -1,6 +1,6 @@
 # Reddit Scraper
 
-This project is a Reddit scraper that retrieves 100 posts from a given subreddit. The retrieved data includes key details like the post title, author, number of comments, and timestamp.
+This project is a Reddit scraper that retrieves posts from a given subreddit. The retrieved data includes key details like the post title, author, number of comments, and timestamp.
 
 ## Features
 
@@ -44,23 +44,25 @@ This project is a Reddit scraper that retrieves 100 posts from a given subreddit
 
 ## Usage
 
-1. Open the `src/main.py` file and modify the `subreddit` variable to the desired subreddit:
-    ```python
-    if __name__ == '__main__':
-        subreddit = "ubisoft"  # Change this to your desired subreddit
-        posts = scrape_subreddit(subreddit, "hot", 100)
-
-        for post in posts["posts"]:
-            print(post)
-    ```
-
-2. Run the script:
+1. Run the script with the desired arguments:
     ```sh
-    python src/main.py
+    python src/main.py <subreddit> <sort> <max_posts>
     ```
+    - `<subreddit>`: The subreddit to scrape (e.g., `python`)
+    - `<sort>`: The sorting order of posts (`new`, `hot`, or `old`)
+    - `<max_posts>`: The maximum number of posts to scrape (e.g., `100`)
+
+    Example:
+    ```sh
+    python src/main.py python hot 100
+    ```
+
+## Demo
+
+![Demo](https://imgur.com/WyJYaQH.png)
 
 ## Notes
 
 - This scraper uses direct HTTP requests to fetch the HTML content of the subreddit pages.
 - The `BeautifulSoup` library is used to parse the HTML and extract the required data.
-- The script handles pagination to retrieve up to 100 posts from the subreddit.
+- The script handles pagination to retrieve the specified number of posts from the subreddit.
