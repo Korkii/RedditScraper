@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import List, Dict, Union
 import argparse
 
+
 @dataclass
 class RedditPost:
     title: str
@@ -58,7 +59,7 @@ def scrape_subreddit(subreddit_id: str, sort: Union["new", "hot", "old"], max_po
     cursor = data["cursor"]
 
     def make_pagination_url(cursor_id: str):
-        return f"https://www.reddit.com/svc/shreddit/community-more-posts/hot/?after={cursor_id}%3D%3D&t=DAY&name=vim&feedLength=3&sort={sort}"
+        return f"https://www.reddit.com/svc/shreddit/community-more-posts/hot/?after={cursor_id}%3D%3D&t=DAY&name={subreddit_id}&feedLength=3&sort={sort}"
 
     while cursor and len(subreddit_data["posts"]) < max_posts:
         url = make_pagination_url(cursor)
@@ -73,16 +74,22 @@ def scrape_subreddit(subreddit_id: str, sort: Union["new", "hot", "old"], max_po
     return subreddit_data
 
 
-if __name__ == '__main__':
-    subreddit = "vim"
+def parse_arguments():
     parser = argparse.ArgumentParser(description='Scrape Reddit posts from a subreddit.')
     parser.add_argument('subreddit', type=str, help='The subreddit to scrape')
     parser.add_argument('sort', type=str, choices=['new', 'hot', 'old'], help='The sorting order of posts')
     parser.add_argument('max_posts', type=int, help='The maximum number of posts to scrape')
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def main():
+    args = parse_arguments()
     posts = scrape_subreddit(args.subreddit, args.sort, args.max_posts)
 
     for post in posts["posts"]:
         print(post)
+
+
+if __name__ == '__main__':
+    main()
