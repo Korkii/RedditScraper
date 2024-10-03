@@ -74,7 +74,6 @@ def scrape_subreddit(subreddit_id: str, sort: Union["new", "hot", "old"], max_po
 
 
 if __name__ == '__main__':
-    subreddit = "vim"
     parser = argparse.ArgumentParser(description='Scrape Reddit posts from a subreddit.')
     parser.add_argument('subreddit', type=str, help='The subreddit to scrape')
     parser.add_argument('sort', type=str, choices=['new', 'hot', 'old'], help='The sorting order of posts')
