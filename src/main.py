@@ -5,6 +5,9 @@ from dataclasses import dataclass
 from typing import List, Dict, Union
 import argparse
 
+BASE_URL = "https://www.reddit.com/r/{}/"
+PAGINATION_URL = "https://www.reddit.com/svc/shreddit/community-more-posts/hot/?after={}%3D%3D&t=DAY&name={}&feedLength=3&sort={}"
+
 
 @dataclass
 class RedditPost:
@@ -50,19 +53,20 @@ def parse_reddit_posts(html):
     return {"posts_data": posts, "cursor": after_cursor}
 
 
+def make_pagination_url(cursor_id: str, subreddit_id: str, sort: str) -> str:
+    return PAGINATION_URL.format(cursor_id, subreddit_id, sort)
+
+
 def scrape_subreddit(subreddit_id: str, sort: Union["new", "hot", "old"], max_posts: int):
-    base_url = f"https://www.reddit.com/r/{subreddit_id}/"
+    base_url = BASE_URL.format(subreddit_id)
     response = requests.get(base_url)
     subreddit_data = {"posts": []}
     data = parse_reddit_posts(response.text)
     subreddit_data["posts"].extend(data["posts_data"])
     cursor = data["cursor"]
 
-    def make_pagination_url(cursor_id: str):
-        return f"https://www.reddit.com/svc/shreddit/community-more-posts/hot/?after={cursor_id}%3D%3D&t=DAY&name={subreddit_id}&feedLength=3&sort={sort}"
-
     while cursor and len(subreddit_data["posts"]) < max_posts:
-        url = make_pagination_url(cursor)
+        url = make_pagination_url(cursor, subreddit_id, sort)
         response = requests.get(url)
         data = parse_reddit_posts(response.text)
         cursor = data["cursor"]
