@@ -54,7 +54,7 @@ This project is a Reddit scraper that retrieves posts from a given subreddit. Th
 
     Example:
     ```sh
-    python src/main.py python hot 100
+    python src/main.py hot 100
     ```
 
 ## Demo
